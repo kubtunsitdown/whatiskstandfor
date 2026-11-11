@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>เขียนตามคำบอก</title>
+<style>
+:root{--bg:#f6f5f1;--card:#fff;--tx:#23262b;--mu:#6b7280;--ac:#4f7cff;--acs:#e8eeff;--ok:#1f9d6b;--oks:#e3f6ee;--bad:#d9475a;--bads:#fdeaed;--bd:#e5e3dc;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#16181d;--card:#1f2229;--tx:#e8eaee;--mu:#9aa1ad;--ac:#7b9cff;--acs:#252d47;--ok:#4cc79a;--oks:#173a2e;--bad:#ff7487;--bads:#40222a;--bd:#2d313a;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#16181d;--card:#1f2229;--tx:#e8eaee;--mu:#9aa1ad;--ac:#7b9cff;--acs:#252d47;--ok:#4cc79a;--oks:#173a2e;--bad:#ff7487;--bads:#40222a;--bd:#2d313a;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:"Noto Sans Thai","Sarabun",system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.55}
+#app{max-width:760px;margin:0 auto;padding:16px 16px 48px}
+h1{font-size:1.35rem;margin:0}h2{font-size:1.05rem;margin:0 0 8px}
+.top{display:flex;align-items:center;gap:10px;margin:4px 0 16px}
+.top h1{flex:1}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:16px;margin-bottom:12px}
+button{font:inherit;border:1px solid var(--bd);background:var(--card);color:var(--tx);padding:9px 16px;border-radius:12px;cursor:pointer}
+button:hover{border-color:var(--ac)}
+button.pri{background:var(--ac);border-color:var(--ac);color:#fff;font-weight:600}
+button.g{background:transparent}button.bad{color:var(--bad)}
+button.chip.on{background:var(--acs);border-color:var(--ac);color:var(--ac);font-weight:600}
+input,textarea,select{font:inherit;font-size:16px;width:100%;padding:10px 12px;border:1px solid var(--bd);border-radius:12px;background:var(--bg);color:var(--tx)}
+textarea{min-height:140px;resize:vertical}
+input:focus,textarea:focus,select:focus{outline:2px solid var(--ac);outline-offset:-1px}
+label{display:block;font-size:.82rem;color:var(--mu);margin:8px 0 4px}
+small,.mu{color:var(--mu);font-size:.85rem}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.row>*{flex:1 1 140px}.row>button{flex:0 0 auto}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:520px){.cols{grid-template-columns:1fr}}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
+.stat{background:var(--acs);border-radius:14px;padding:12px;text-align:center}
+.stat b{display:block;font-size:1.5rem}
+.bar{height:8px;background:var(--bd);border-radius:6px;overflow:hidden}.bar>i{display:block;height:100%;background:var(--ac);border-radius:6px;transition:width .2s}
+.big{font-size:2.4rem;width:76px;height:76px;border-radius:50%;padding:0;background:var(--acs);border-color:var(--ac)}
+.center{text-align:center}
+.item{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-top:1px solid var(--bd)}.item:first-child{border-top:0}
+.tag{font-size:.75rem;padding:2px 8px;border-radius:20px;background:var(--acs);color:var(--ac)}
+.okc{color:var(--ok)}.badc{color:var(--bad)}
+.sc{font-size:3rem;font-weight:700;color:var(--ac)}
+svg{max-width:100%;height:auto;display:block}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<button id="mt" data-a="mute" aria-label="เปิด/ปิดเสียงเอฟเฟกต์" style="position:fixed;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);z-index:5;width:44px;height:44px;border-radius:50%;padding:0;background:var(--card)">🔊</button>
+<script>
+const $=s=>document.querySelector(s);
+let S={projects:[],hist:[]};
+try{S=JSON.parse(localStorage.getItem('dict1'))||S}catch(e){}
+const save=()=>{try{localStorage.setItem('dict1',JSON.stringify(S))}catch(e){}};
+const uid=()=>Math.random().toString(36).slice(2,9);
+if(!S.seeded){const D=[['Section A',[['totally','โดยสิ้นเชิง โดยสมบูรณ์'],['unacceptably','อย่างไม่เป็นที่ยอมรับ'],['actually','ตามความเป็นจริง'],['altogether','ทั้งหมด'],['especially','โดยเฉพาะอย่างยิ่ง'],['pleasure','ความยินดี'],['seriously','อย่างจริงจัง'],['surprisingly','อย่างแปลกใจ']]],['Section B',[['rather','ค่อนข้าง'],['alternative','ทางเลือก ตัวเลือก'],['robotic','เกี่ยวกับหุ่นยนต์'],['disadvantage','ข้อเสีย ความเสียเปรียบ'],['analog','แบบอนาลอก ( แสดงข้อมูลด้วยสัญญาณต่อเนื่อง )'],['digital','แบบดิจิตัล ( แสดงผลเป็นตัวเลข )'],['mechanical','เกี่ยวกับเครื่องจักร'],['couple','สองสิ่งคล้ายกัน']]],['Section C',[['electronics','อุปกรณ์อิเล็กทรอนิกส์'],['inventor','นักประดิษฐ์'],['operate','ปฏิบัติงาน'],['researcher','นักวิจัย'],['admire','นับถือ ชมเชย'],['admit','ยอมรับ สารภาพ'],['advertise','ลงโฆษณา'],['afford','สามารถซื้อได้']]],['Section D',[['speed','ความเร็ว'],['supporter','ผู้สนับสนุน'],['system','ระบบ'],['temporary','ชั่วคราว'],['assist','ช่วยเหลือ'],['opponent','ฝ่ายตรงข้าม คู่แข่ง'],['solve','แก้ปัญหา'],['somehow','ด้วยวิธีใดก็ตาม']]]];
+ S.projects.unshift({id:uid(),name:'Flashcard 1',l1:'en-US',l2:'th-TH',sections:D.map(d=>({id:uid(),name:d[0],a:d[1].map(x=>x[0]).join('\n'),b:d[1].map(x=>x[1]).join('\n')}))});S.seeded=1;save()}
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const LANGS=[['en-US','English (US)'],['en-GB','English (UK)'],['ja-JP','日本語'],['zh-CN','中文'],['ko-KR','한국어'],['fr-FR','Français'],['de-DE','Deutsch'],['es-ES','Español'],['th-TH','ไทย']];
+const sel=(f,v)=>`<select data-f="${f}">${LANGS.map(l=>`<option value="${l[0]}"${l[0]===v?' selected':''}>${l[1]}</option>`).join('')}</select>`;
+let V={v:'home',pid:null,del:null},C={n:10,mode:'practice',sec:20,ic:false,slow:false},G=null;
+const P=()=>S.projects.find(p=>p.id===V.pid);
+let AC;const tone=(f,d=.1,t='sine',v=.08,at=0)=>{if(C.mute)return;try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume();const o=AC.createOscillator(),g=AC.createGain(),s=AC.currentTime+at;o.type=t;o.frequency.value=f;g.gain.setValueAtTime(v,s);g.gain.exponentialRampToValueAtTime(.0001,s+d);o.connect(g);g.connect(AC.destination);o.start(s);o.stop(s+d)}catch(e){}};
+const SFX={click(){tone(660,.06,'triangle')},ok(){tone(660,.1);tone(880,.14,'sine',.08,.09)},bad(){tone(240,.22,'sawtooth',.05)},win(){[523,659,784,1047].forEach((f,i)=>tone(f,.2,'triangle',.08,i*.11))},fin(){tone(392,.16,'triangle');tone(330,.3,'triangle',.08,.15)}};
+const note=m=>{const n=$('#nt');if(n)n.textContent=m};
+const lines=t=>t.split(/\r?\n/).map(x=>x.trim());
+function words(p){const o=[];p.sections.forEach(s=>{const a=lines(s.a),b=lines(s.b),n=Math.max(a.length,b.length);for(let i=0;i<n;i++)if(a[i]||b[i])o.push({s:s.name,w:a[i]||'',t:b[i]||''})});return o}
+const cnt=s=>words({sections:[s]}).length;
+const go=(v,pid)=>{V.v=v;if(pid)V.pid=pid;V.del=null;render();scrollTo(0,0)};
+const pct=(a,b)=>b?Math.round(a/b*100):0;
+
+function home(){
+ return `<div class="top"><h1>✍️ เขียนตามคำบอก</h1><button class="pri" data-a="new">+ โปรเจกต์ใหม่</button></div>`+
+ (S.projects.length?S.projects.map(p=>{const n=words(p).length;return `<div class="card"><h2>${esc(p.name)}</h2><div class="mu">${p.sections.length} section · ${n} คำ</div><div class="row" style="margin-top:12px"><button class="pri" data-a="setup" data-id="${p.id}">▶ เล่น</button><button data-a="edit" data-id="${p.id}">แก้ไข</button><button data-a="stats" data-id="${p.id}">วิเคราะห์</button><button class="g bad" data-a="del" data-id="${p.id}">${V.del===p.id?'แน่ใจนะ?':'ลบ'}</button></div></div>`}).join(''):
+ `<div class="card center"><p class="mu">ยังไม่มีชุดคำศัพท์<br>กด “โปรเจกต์ใหม่” เพื่อเริ่มสร้าง flashcard</p></div>`);
+}
+function edit(){const p=P();
+ return `<div class="top"><button class="g" data-a="home">← กลับ</button><h1>แก้ไขชุดคำ</h1></div>
+ <div class="card"><label>ชื่อโปรเจกต์</label><input data-f="pn" value="${esc(p.name)}">
+ <div class="row"><div><label>ภาษาคำศัพท์ (เสียงอ่าน)</label>${sel('l1',p.l1)}</div><div><label>ภาษาคำแปล (เสียงอ่าน)</label>${sel('l2',p.l2)}</div></div></div>
+ ${p.sections.map(s=>`<div class="card"><div class="row"><input data-sid="${s.id}" data-f="name" value="${esc(s.name)}" placeholder="ชื่อ section">${p.sections.length>1?`<button class="g bad" data-a="delsec" data-id="${s.id}">ลบ</button>`:''}</div>
+ <div class="cols"><div><label>คำศัพท์ (1 บรรทัด = 1 คำ)</label><textarea data-sid="${s.id}" data-f="a" placeholder="วางหลายบรรทัดได้เลย">${esc(s.a)}</textarea></div>
+ <div><label>คำแปล (บรรทัดตรงกับคำศัพท์)</label><textarea data-sid="${s.id}" data-f="b" placeholder="วางหลายบรรทัดได้เลย">${esc(s.b)}</textarea></div></div>
+ <small id="c-${s.id}">${cnt(s)} คำ</small></div>`).join('')}
+ <div class="row"><button data-a="addsec">+ เพิ่ม section</button><button class="pri" data-a="home">เสร็จ</button></div>`}
+function setup(){const p=P(),n=words(p).length;if(C.n>n)C.n=n;if(C.n<1)C.n=Math.min(10,n)||1;
+ if(!n)return `<div class="top"><button class="g" data-a="home">← กลับ</button><h1>${esc(p.name)}</h1></div><div class="card center"><p class="mu">ยังไม่มีคำศัพท์ในโปรเจกต์นี้</p><button class="pri" data-a="edit" data-id="${p.id}">ไปเพิ่มคำศัพท์</button></div>`;
+ return `<div class="top"><button class="g" data-a="home">← กลับ</button><h1>${esc(p.name)}</h1></div>
+ <div class="card"><h2>จำนวนคำ</h2><div class="mu">ทั้งหมด ${n} คำ · อยากเขียนกี่คำ?</div>
+ <div class="row" style="margin-top:8px"><input type="range" data-f="n" min="1" max="${n}" value="${C.n}"><input type="number" data-f="n" min="1" max="${n}" value="${C.n}" style="max-width:100px;flex:0 0 100px"></div>
+ <div class="row" style="margin-top:8px"><button class="chip" data-a="nn" data-v="${Math.min(10,n)}">10</button><button class="chip" data-a="nn" data-v="${Math.min(20,n)}">20</button><button class="chip" data-a="nn" data-v="${n}">ทั้งหมด</button></div></div>
+ <div class="card"><h2>โหมด</h2><div class="row"><button class="chip${C.mode==='practice'?' on':''}" data-a="mode" data-v="practice">🎧 ฝึก · ฟังซ้ำได้ไม่จำกัด</button><button class="chip${C.mode==='timed'?' on':''}" data-a="mode" data-v="timed">⏱ จับเวลา</button></div>
+ ${C.mode==='timed'?`<label>เวลาต่อคำ (วินาที)</label><div class="row">${[10,20,30,45,60].map(s=>`<button class="chip${C.sec===s?' on':''}" data-a="sec" data-v="${s}">${s}s</button>`).join('')}<input type="number" min="3" max="600" data-f="sec" value="${C.sec}" style="max-width:100px;flex:0 0 100px"></div>`:''}
+ <label style="margin-top:14px"><input type="checkbox" data-f="ic" ${C.ic?'checked':''} style="width:auto"> ไม่สนตัวพิมพ์เล็ก/ใหญ่ (ค่าเริ่มต้น: ต้องเป๊ะ)</label>
+ </div><button class="pri" style="width:100%;padding:14px" data-a="start">เริ่มเล่น ▶</button>`}
+function play(){const p=P(),q=G.q[G.i];
+ return `<div class="top"><button class="g" data-a="quit">✕ ออก</button><h1>คำที่ ${G.i+1} / ${G.q.length}</h1></div>
+ <div class="bar" style="margin-bottom:14px"><i style="width:${G.i/G.q.length*100}%"></i></div>
+ <div class="card center"><span class="tag">${esc(q.s)}</span>
+ <div class="row" style="justify-content:center;margin:14px 0"><button class="big" data-a="say" title="ฟังซ้ำ">🔊</button></div>
+ ${G.mode==='timed'?`<div class="bar"><i id="tb" style="width:100%;background:var(--ok)"></i></div><div class="mu" id="tt">${G.sec}s</div>`:'<div class="mu">ฟังกี่รอบก็ได้ ไม่จำกัดเวลา</div>'}<div class="badc" id="nt" style="min-height:1.3em"></div>
+ ${q.w?`<label style="text-align:left">คำศัพท์ (${LANGS.find(l=>l[0]===p.l1)[1]})</label><input id="iw" autocomplete="off" autocapitalize="off" spellcheck="false">`:''}
+ ${q.t?`<label style="text-align:left">คำแปล</label><input id="it" autocomplete="off" spellcheck="false">`:''}
+ <button class="pri" style="width:100%;margin-top:14px;padding:12px" data-a="submit">${G.i+1===G.q.length?'ส่งคำสุดท้าย':'ถัดไป ↵'}</button></div>
+ ${'speechSynthesis' in window?'':'<div class="card badc">เบราว์เซอร์นี้ไม่รองรับเสียงอ่านออกเสียง</div>'}`}
+function result(){const r=G.res,ok=r.filter(x=>x.ok).length,bad=r.filter(x=>!x.ok);
+ return `<div class="top"><h1>ผลลัพธ์</h1></div>
+ <div class="card center"><div class="sc">${ok}/${r.length}</div><div class="mu">ถูกทั้งคำและคำแปล ${pct(ok,r.length)}%</div>
+ <div class="grid" style="margin-top:12px"><div class="stat"><b>${pct(r.filter(x=>x.ow||!x.w).length,r.length)}%</b><small>คำศัพท์</small></div><div class="stat"><b>${pct(r.filter(x=>x.ot||!x.t).length,r.length)}%</b><small>คำแปล</small></div><div class="stat"><b>${Math.round(G.ms/1000)}s</b><small>เวลารวม</small></div></div></div>
+ ${bad.length?`<div class="card"><h2>ที่ต้องทบทวน (${bad.length})</h2>${bad.map(x=>`<div class="item"><div style="flex:1"><div><b>${esc(x.w)}</b> <span class="mu">→ ${esc(x.t)}</span></div><small class="badc">คุณเขียน: ${esc(x.aw||'—')} / ${esc(x.at||'—')}</small></div></div>`).join('')}</div>`:'<div class="card center okc">เยี่ยมมาก! ถูกหมดเลย 🎉</div>'}
+ <div class="row"><button class="pri" data-a="setup" data-id="${V.pid}">เล่นอีกครั้ง</button><button data-a="stats" data-id="${V.pid}">วิเคราะห์</button><button data-a="home">หน้าแรก</button></div>`}
+function stats(){const p=P(),h=S.hist.filter(x=>x.pid===p.id);
+ const head=`<div class="top"><button class="g" data-a="home">← กลับ</button><h1>วิเคราะห์ · ${esc(p.name)}</h1></div>`;
+ if(!h.length)return head+`<div class="card center mu">ยังไม่มีประวัติการเล่น<br><br><button class="pri" data-a="setup" data-id="${p.id}">เริ่มเล่น</button></div>`;
+ const tot=h.reduce((a,x)=>a+x.n,0),okt=h.reduce((a,x)=>a+x.ok,0),acc=h.map(x=>pct(x.ok,x.n)),last=acc.slice(-20);
+ const pts=last.map((v,i)=>[last.length>1?10+i*280/(last.length-1):150,105-v*0.9]);
+ const svg=`<svg viewBox="0 0 300 120" role="img" aria-label="กราฟความแม่นยำ"><line x1="10" x2="290" y1="15" y2="15" stroke="var(--bd)"/><line x1="10" x2="290" y1="60" y2="60" stroke="var(--bd)"/><line x1="10" x2="290" y1="105" y2="105" stroke="var(--bd)"/><text x="12" y="12" font-size="8" fill="var(--mu)">100%</text><polyline fill="none" stroke="var(--ac)" stroke-width="2.5" points="${pts.map(q=>q.join(',')).join(' ')}"/>${pts.map(q=>`<circle cx="${q[0]}" cy="${q[1]}" r="3.5" fill="var(--ac)"/>`).join('')}</svg>`;
+ const det=h.flatMap(x=>x.det),m={},sec={};
+ det.forEach(d=>{const k=d.w+'|'+d.t;m[k]=m[k]||{w:d.w,t:d.t,n:0,x:0};m[k].n++;if(!d.ok)m[k].x++;sec[d.s]=sec[d.s]||{n:0,ok:0};sec[d.s].n++;if(d.ok)sec[d.s].ok++});
+ const weak=Object.values(m).filter(x=>x.x).sort((a,b)=>b.x/b.n-a.x/a.n||b.x-a.x).slice(0,8);
+ return head+`<div class="grid" style="margin-bottom:12px"><div class="stat"><b>${h.length}</b><small>รอบที่เล่น</small></div><div class="stat"><b>${tot}</b><small>คำที่เขียน</small></div><div class="stat"><b>${pct(okt,tot)}%</b><small>แม่นยำรวม</small></div><div class="stat"><b>${Math.max(...acc)}%</b><small>ดีที่สุด</small></div></div>
+ <div class="card"><h2>แนวโน้มความแม่นยำ (${last.length} รอบล่าสุด)</h2>${svg}</div>
+ <div class="card"><h2>แยกตาม section</h2>${Object.entries(sec).map(([k,v])=>`<div style="margin:8px 0"><div class="row" style="justify-content:space-between;flex-wrap:nowrap"><span>${esc(k)}</span><b>${pct(v.ok,v.n)}%</b></div><div class="bar"><i style="width:${pct(v.ok,v.n)}%"></i></div></div>`).join('')}</div>
+ <div class="card"><h2>คำที่พลาดบ่อย</h2>${weak.length?weak.map(x=>`<div class="item"><div style="flex:1"><b>${esc(x.w)}</b> <span class="mu">→ ${esc(x.t)}</span></div><span class="badc">พลาด ${x.x}/${x.n}</span></div>`).join(''):'<span class="okc">ยังไม่มีคำที่พลาด 🎉</span>'}</div>
+ <div class="card"><h2>ประวัติล่าสุด</h2>${h.slice(-8).reverse().map(x=>`<div class="item"><div style="flex:1">${new Date(x.d).toLocaleString('th-TH',{dateStyle:'medium',timeStyle:'short'})}<br><small>${x.mode==='timed'?'⏱ จับเวลา':'🎧 ฝึก'}</small></div><b>${x.ok}/${x.n} · ${pct(x.ok,x.n)}%</b></div>`).join('')}</div>`}
+
+function ask(){return `<div class="top"><button class="g" data-a="setup" data-id="${V.pid}">← กลับ</button><h1>ก่อนเริ่มเล่น</h1></div><div class="card center"><div style="font-size:2.5rem">📖</div><h2>อยากท่องจำคำศัพท์ก่อนไหม?</h2><p class="mu">ดูคำศัพท์และคำแปลทั้งหมดแยกตาม section ก่อนเริ่มเขียน</p><div class="row" style="justify-content:center"><button class="pri" data-a="study">📖 ท่องจำก่อน</button><button data-a="begin">ข้ามไปเล่นเลย</button></div></div>`}
+function study(){const p=P();return `<div class="top"><button class="g" data-a="ask">← กลับ</button><h1>ท่องจำคำศัพท์</h1></div>${p.sections.map(s=>{const w=words({sections:[s]});return w.length?`<div class="card"><h2>${esc(s.name)} <span class="tag">${w.length} คำ</span></h2>${w.map(x=>`<div class="item"><div style="flex:1;font-weight:600">${esc(x.w)}</div><div style="flex:1.4" class="mu">${esc(x.t)}</div></div>`).join('')}</div>`:''}).join('')}<button class="pri" style="width:100%;padding:14px" data-a="begin">พร้อมแล้ว เริ่มเล่น ▶</button>`}
+function render(){$('#app').innerHTML=({home,edit,setup,play,result,stats,ask,study}[V.v])();
+ if(V.v==='play'){const i=$('#iw')||$('#it');if(i)i.focus();startQ()}}
+
+const norm=x=>{x=x.trim().replace(/\s+/g,' ');return G&&G.ic?x.toLowerCase():x};
+function say(){const sp=window.speechSynthesis;if(!sp){note('เบราว์เซอร์นี้ไม่รองรับเสียงอ่าน');return}
+ const p=P(),q=G.q[G.i],t=q.w||q.t,l=q.w?p.l1:p.l2;
+ try{sp.cancel();sp.resume&&sp.resume()}catch(e){}
+ clearTimeout(G.st);G.st=setTimeout(()=>{const u=new SpeechSynthesisUtterance(t);u.lang=l;u.rate=C.slow?.6:.9;
+  const vs=sp.getVoices(),v=vs.find(x=>x.lang.replace('_','-')===l)||vs.find(x=>x.lang.toLowerCase().startsWith(l.slice(0,2)));if(v)u.voice=v;
+  u.onerror=e=>note('เล่นเสียงไม่ได้ ('+(e.error||'ผิดพลาด')+') ลองแตะ 🔊 อีกครั้ง');
+  window._u=u;sp.speak(u)},80)}
+function startQ(){clearInterval(G.tm);G.t0=Date.now();say();
+ if(G.mode==='timed'){const tot=G.sec*1000;G.tm=setInterval(()=>{const left=tot-(Date.now()-G.t0),b=$('#tb');if(!b)return;b.style.width=Math.max(0,left/tot*100)+'%';b.style.background=left<tot*.25?'var(--bad)':'var(--ok)';$('#tt').textContent=Math.max(0,Math.ceil(left/1000))+'s';if(left<=0)submit()},100)}}
+function submit(){if(!G||V.v!=='play')return;clearInterval(G.tm);const q=G.q[G.i],aw=$('#iw')?$('#iw').value:'',at=$('#it')?$('#it').value:'';
+ const ow=!q.w||norm(aw)===norm(q.w),ot=!q.t||norm(at)===norm(q.t);
+ G.res.push({...q,aw,at,ow,ot,ok:ow&&ot});(ow&&ot?SFX.ok:SFX.bad)();G.ms+=Date.now()-G.t0;G.i++;
+ if(G.i>=G.q.length){speechSynthesis&&speechSynthesis.cancel();const r=G.res;S.hist.push({id:uid(),pid:V.pid,d:Date.now(),mode:G.mode,n:r.length,ok:r.filter(x=>x.ok).length,det:r.map(x=>({s:x.s,w:x.w,t:x.t,ok:x.ok}))});S.hist=S.hist.slice(-200);save();go('result');setTimeout(()=>pct(r.filter(x=>x.ok).length,r.length)>=60?SFX.win():SFX.fin(),350)}else render()}
+
+const A={
+ new(){const p={id:uid(),name:'Flashcard '+(S.projects.length+1),l1:'en-US',l2:'th-TH',sections:[{id:uid(),name:'Section 1',a:'',b:''}]};S.projects.push(p);save();go('edit',p.id)},
+ edit(d){go('edit',d.id)},setup(d){go('setup',d.id)},stats(d){go('stats',d.id)},home(){save();go('home')},
+ del(d){if(V.del===d.id){S.projects=S.projects.filter(p=>p.id!==d.id);S.hist=S.hist.filter(h=>h.pid!==d.id);save();V.del=null}else V.del=d.id;render()},
+ addsec(){const p=P();p.sections.push({id:uid(),name:'Section '+(p.sections.length+1),a:'',b:''});save();render()},
+ delsec(d){const p=P();p.sections=p.sections.filter(s=>s.id!==d.id);save();render()},
+ nn(d){C.n=+d.v;render()},mode(d){C.mode=d.v;render()},sec(d){C.sec=+d.v;render()},
+ start(){go('ask')},mute(){C.mute=!C.mute;$('#mt').textContent=C.mute?'🔇':'🔊'},study(){go('study')},ask(){go('ask')},
+ begin(){const p=P(),all=words(p);for(let i=all.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[all[i],all[j]]=[all[j],all[i]]}
+  G={q:all.slice(0,C.n),i:0,res:[],ms:0,mode:C.mode,sec:C.sec,ic:C.ic};go('play')},
+ say(){say()},slow(){C.slow=!C.slow;say()},submit(){submit()},quit(){if(G)clearInterval(G.tm);speechSynthesis&&speechSynthesis.cancel();go('home')}
+};
+document.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(b&&A[b.dataset.a]){if(!['say','slow','submit','mute'].includes(b.dataset.a))SFX.click();A[b.dataset.a](b.dataset)}});
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&V.v==='play'&&e.target.tagName==='INPUT'){e.preventDefault();const t=$('#it');if(e.target.id==='iw'&&t)t.focus();else submit()}});
+document.addEventListener('input',e=>{const t=e.target,f=t.dataset.f;if(!f)return;
+ if(V.v==='setup'){C[f]=f==='ic'?t.checked:Math.max(1,+t.value||1);if(f==='n')document.querySelectorAll('[data-f="n"]').forEach(x=>x!==t&&(x.value=C.n));if(f==='ic')render();return}
+ if(V.v!=='edit')return;const p=P();
+ if(f==='pn')p.name=t.value;else if(f==='l1'||f==='l2')p[f]=t.value;
+ else{const s=p.sections.find(x=>x.id===t.dataset.sid);s[f]=t.value;const c=$('#c-'+s.id);if(c)c.textContent=cnt(s)+' คำ'}
+ save()});
+render();
+</script>
+</body>
+</html>
